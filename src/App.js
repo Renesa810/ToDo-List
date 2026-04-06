@@ -3,42 +3,59 @@ import Header from "./MyComponents/Header"
 import {Footer} from "./MyComponents/Footer"
 import {Todos} from "./MyComponents/Todos"
 import {AddTodo} from "./MyComponents/AddTodo"
-import { useState } from 'react';
+import { useState, useEffect, useEffectEvent } from 'react';
+import { cleanup } from '@testing-library/react';
 
 
 function App() {
+  let initTodo;
+  if(localStorage.getItem("todos")===null){
+    initTodo= [];
+  }
+  else{
+    initTodo=JSON.parse(localStorage.getItem("todos"));
+  }
+
+
   const onDelete = (todo)=>{
     console.log("I am ondelete of todo", todo);
 
     setTodos(todos.filter((e)=>{
       return e!==todo;
-    }))
+    }));
+    localStorage.setItem("todos", JSON.stringify(todos));
   }
 
-  const [todos, setTodos] = useState([
-    {
-      sno: 1,
-      title: "task1",
-      desc: "need to do task1"
-    },
-    {
-      sno: 2,
-      title: "task2",
-      desc: "need to do task1"
-    },
-    {
-      sno: 3,
-      title: "task3",
-      desc: "need to do task1"
+  const addTodo =(title, desc )=>{
+    console.log("i am adding a todo", title, desc)
+    
+    let sno=1;
+    if(todos.length!=0){
+      sno= todos[todos.length-1].sno+1;
     }
 
-]);
+    const myTodo={
+      sno:sno,
+      title: title,
+      desc:desc
+    }
+    
+    setTodos([...todos, myTodo]);
+
+    console.log(myTodo);
+  }
+
+  const [todos, setTodos] = useState(initTodo);
+   useEffect(()=> {
+      localStorage.setItem("todos", JSON.stringify(todos));
+    }, [todos])
+
 
 
   return (
     <>
       <Header title="MyTodosList"/>
-      <AddTodo/>
+      <AddTodo addTodo={addTodo}/>
       <Todos todos={todos} onDelete={onDelete}/>
       <Footer/>
     </>
