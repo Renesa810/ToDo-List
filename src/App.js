@@ -1,4 +1,4 @@
-import './App.css';
+/* import './App.css';
 import Header from "./MyComponents/Header"
 import {Footer} from "./MyComponents/Footer"
 import {Todos} from "./MyComponents/Todos"
@@ -7,6 +7,7 @@ import {About} from "./MyComponents/About"
 
 import { useState, useEffect, useEffectEvent } from 'react';
 import { cleanup } from '@testing-library/react';
+import TodoState from "./context/TodoState";
 
 import {
   BrowserRouter as Router,
@@ -16,50 +17,6 @@ import {
 
 
 function App() {
-  let initTodo;
-  if(localStorage.getItem("todos")===null){
-    initTodo= [];
-  }
-  else{
-    initTodo=JSON.parse(localStorage.getItem("todos"));
-  }
-
-
-  const onDelete = (todo)=>{
-    console.log("I am ondelete of todo", todo);
-
-    setTodos(todos.filter((e)=>{
-      return e!==todo;
-    }));
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }
-
-  const addTodo =(title, desc )=>{
-    console.log("i am adding a todo", title, desc)
-    
-    let sno=1;
-    if(todos.length!=0){
-      sno= todos[todos.length-1].sno+1;
-    }
-
-    const myTodo={
-      sno:sno,
-      title: title,
-      desc:desc
-    }
-    
-    setTodos([...todos, myTodo]);
-
-    console.log(myTodo);
-  }
-
-  const [todos, setTodos] = useState(initTodo);
-   useEffect(()=> {
-      localStorage.setItem("todos", JSON.stringify(todos));
-    }, [todos])
-
-
-
   return (
   <>
   <Router>
@@ -82,6 +39,51 @@ function App() {
     <Footer/>
   </Router>
   </>
+  );
+}
+
+export default App;
+ */
+
+import './App.css';
+import Header from "./MyComponents/Header"
+import { Footer } from "./MyComponents/Footer"
+import { Todos } from "./MyComponents/Todos"
+import { AddTodo } from "./MyComponents/AddTodo"
+import { About } from "./MyComponents/About"
+
+import TodoState from "./context/TodoState";
+
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+} from "react-router-dom";
+
+
+function App() {
+  return (
+    <TodoState>   {/* ✅ Wrap with context */}
+      <Router>
+        <Header title="MyTodosList"/>
+
+        <Routes>
+          <Route 
+            path="/" 
+            element={
+              <>
+                <AddTodo />   {/* ❌ no props */}
+                <Todos />     {/* ❌ no props */}
+              </>
+            } 
+          />
+
+          <Route path="/about" element={<About />} />
+        </Routes>
+
+        <Footer/>
+      </Router>
+    </TodoState>
   );
 }
 

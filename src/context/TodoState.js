@@ -1,0 +1,98 @@
+/* import React, { useState, useEffect } from "react";
+import { TodoContext } from "./TodoContext";
+
+
+const TodoState = (props) => {
+
+  let initTodo;
+    if(localStorage.getItem("todos")===null){
+    initTodo= [];
+  }
+  else{
+    initTodo=JSON.parse(localStorage.getItem("todos"));
+  }
+
+
+  const onDelete = (todo)=>{
+    console.log("I am ondelete of todo", todo);
+
+    setTodos(todos.filter((e)=>{
+      return e!==todo;
+    }));
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }
+
+  const addTodo =(title, desc )=>{
+    console.log("i am adding a todo", title, desc)
+    
+    let sno=1;
+    if(todos.length!==0){
+      sno= todos[todos.length-1].sno+1;
+    }
+
+    const myTodo={
+      sno:sno,
+      title: title,
+      desc:desc
+    }
+    
+    setTodos([...todos, myTodo]);
+
+    console.log(myTodo);
+  }
+
+  const [todos, setTodos] = useState(initTodo);
+   useEffect(()=> {
+      localStorage.setItem("todos", JSON.stringify(todos));
+    }, [todos])
+
+};
+
+export default TodoState; */
+
+
+import React, { useState, useEffect } from "react";
+import { TodoContext } from "./TodoContext";
+
+const TodoState = (props) => {
+
+  let initTodo;
+  if(localStorage.getItem("todos")===null){
+    initTodo= [];
+  } else {
+    initTodo=JSON.parse(localStorage.getItem("todos"));
+  }
+
+  const [todos, setTodos] = useState(initTodo);
+
+  const onDelete = (todo)=>{
+    setTodos(todos.filter((e)=> e !== todo));
+  }
+
+  const addTodo =(title, desc)=>{
+    let sno=1;
+    if(todos.length!==0){
+      sno= todos[todos.length-1].sno+1;
+    }
+
+    const myTodo={
+      sno:sno,
+      title: title,
+      desc:desc
+    }
+    
+    setTodos([...todos, myTodo]);
+  }
+
+  useEffect(()=> {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
+
+  return (
+    <TodoContext.Provider value={{ todos, addTodo, onDelete }}>
+      {props.children}
+    </TodoContext.Provider>
+  );
+};
+
+export default TodoState;

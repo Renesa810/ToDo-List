@@ -1,6 +1,9 @@
-import React from 'react'
+import React, { useContext } from "react";
+import { TodoContext } from "../context/TodoContext";
 
-export const TodoItem = ({todo, onDelete}) => {
+
+export const TodoItem = ({todo}) => {
+  const { onDelete } = useContext(TodoContext);
   return (
     <div>
         <h4>{todo.title}</h4>
