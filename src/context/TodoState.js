@@ -1,95 +1,82 @@
-/* import React, { useState, useEffect } from "react";
-import { TodoContext } from "./TodoContext";
-
-
-const TodoState = (props) => {
-
-  let initTodo;
-    if(localStorage.getItem("todos")===null){
-    initTodo= [];
-  }
-  else{
-    initTodo=JSON.parse(localStorage.getItem("todos"));
-  }
-
-
-  const onDelete = (todo)=>{
-    console.log("I am ondelete of todo", todo);
-
-    setTodos(todos.filter((e)=>{
-      return e!==todo;
-    }));
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }
-
-  const addTodo =(title, desc )=>{
-    console.log("i am adding a todo", title, desc)
-    
-    let sno=1;
-    if(todos.length!==0){
-      sno= todos[todos.length-1].sno+1;
-    }
-
-    const myTodo={
-      sno:sno,
-      title: title,
-      desc:desc
-    }
-    
-    setTodos([...todos, myTodo]);
-
-    console.log(myTodo);
-  }
-
-  const [todos, setTodos] = useState(initTodo);
-   useEffect(()=> {
-      localStorage.setItem("todos", JSON.stringify(todos));
-    }, [todos])
-
-};
-
-export default TodoState; */
-
-
 import React, { useState, useEffect } from "react";
 import { TodoContext } from "./TodoContext";
 
 const TodoState = (props) => {
 
   let initTodo;
-  if(localStorage.getItem("todos")===null){
-    initTodo= [];
+  if(localStorage.getItem("todos") === null){
+    initTodo = [];
   } else {
-    initTodo=JSON.parse(localStorage.getItem("todos"));
+    initTodo = JSON.parse(localStorage.getItem("todos"));
   }
 
-  const [todos, setTodos] = useState(initTodo);
+  const [state, setState] = useState({
+    past: [],
+    present: initTodo,
+    future: []
+  });
 
-  const onDelete = (todo)=>{
-    setTodos(todos.filter((e)=> e !== todo));
-  }
+  const addTodo = (title, desc) => {
 
-  const addTodo =(title, desc)=>{
-    let sno=1;
-    if(todos.length!==0){
-      sno= todos[todos.length-1].sno+1;
-    }
+    const newTodo = {
+      sno: state.present.length + 1,
+      title,
+      desc
+    };
 
-    const myTodo={
-      sno:sno,
-      title: title,
-      desc:desc
-    }
-    
-    setTodos([...todos, myTodo]);
-  }
+    setState({
+      past: [...state.past, state.present],
+      present: [...state.present, newTodo],
+      future: []
+    });
+  };
 
-  useEffect(()=> {
-    localStorage.setItem("todos", JSON.stringify(todos));
-  }, [todos]);
+  const onDelete = (todo) => {
+    const updated = state.present.filter((t) => t !== todo);
+
+    setState({
+      past: [...state.past, state.present],
+      present: updated,
+      future: []
+    });
+  };
+
+  const undo = () => {
+    if (state.past.length === 0) return;
+
+    const previous = state.past[state.past.length - 1];
+
+    setState({
+      past: state.past.slice(0, -1),
+      present: previous,
+      future: [state.present, ...state.future]
+    });
+  };
+
+  const redo = () => {
+    if (state.future.length === 0) return;
+
+    const next = state.future[0];
+
+    setState({
+      past: [...state.past, state.present],
+      present: next,
+      future: state.future.slice(1)
+    });
+  };
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(state.present));
+  }, [state.present]);
 
   return (
-    <TodoContext.Provider value={{ todos, addTodo, onDelete }}>
+    <TodoContext.Provider value={{
+      todos: state.present,
+      addTodo,
+      onDelete,
+      undo,
+      redo
+    }}>
       {props.children}
     </TodoContext.Provider>
   );

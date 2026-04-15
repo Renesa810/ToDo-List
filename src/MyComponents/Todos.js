@@ -32,7 +32,7 @@ import { TodoContext } from "../context/TodoContext";
 
 export const Todos = () => {
 
-  const { todos, onDelete } = useContext(TodoContext);
+  const { todos } = useContext(TodoContext);
 
   return (
     <div className="container" style={{minHeight: "70vh"}}>

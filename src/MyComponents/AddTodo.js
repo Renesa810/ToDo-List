@@ -41,13 +41,12 @@ export const AddTodo = (props) => {
   )
 } */
 
-  import React, { useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { TodoContext } from "../context/TodoContext";
 
 export const AddTodo = () => {
 
-  const { addTodo } = useContext(TodoContext);
-
+  const { addTodo, undo, redo } = useContext(TodoContext);
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
 
@@ -79,6 +78,11 @@ export const AddTodo = () => {
             
             <button type="submit" className="btn btn-sm btn-success">Add</button>
       </form>
+      <br/>
+      <div>
+      <button onClick={undo} className="btn btn-sm btn-success">Undo</button>
+      <button onClick={redo} className="btn btn-sm btn-success">Redo</button>
+      </div>
     </div>
   );
 }
